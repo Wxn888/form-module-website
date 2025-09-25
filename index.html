@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FormModule</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <!-- 主体部分 -->
+  <section class="hero">
+    <!-- 左边文字 -->
+    <div class="hero-text">
+      <h1>Ready to Transform Your Ideas into Reality?</h1>
+      <p>With over 17 years of experience and nearly 3,000 successful projects, Ideal Pro is your trusted partner for custom manufacturing solutions.</p>
+      
+      <div class="btn-group">
+        <button class="btn btn-quote" id="quoteBtn">Get a Quote</button>
+        <button class="btn btn-start" id="startBtn">Start Your Project</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat">17+ Years<br>Experience</div>
+        <div class="stat">3,000+<br>Projects</div>
+        <div class="stat">98%<br>Satisfaction</div>
+        <div class="stat">Global<br>Service</div>
+      </div>
+    </div>
+
+    <!-- 右边图片 -->
+    <div class="hero-image">
+      <img src="https://images.unsplash.com/photo-1603791440384-56cd371ee9a7" alt="Robot">
+    </div>
+  </section>
+
+  <!-- 模态框 -->
+  <div class="modal" id="formModal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2>Contact Us</h2>
+      <form id="contactForm" novalidate>
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" placeholder="Your Name">
+          <div class="error-message" id="nameError">Please enter your name</div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" placeholder="Your Phone Number">
+          <div class="error-message" id="phoneError">Please enter a valid phone number</div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="Your Email Address">
+          <div class="error-message" id="emailError">Please enter a valid email address</div>
+        </div>
+        
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+  <div>
+    <h3 style="text-align: center;">点击两个按钮均可打开表单，名字中英文都行，手机号必须是数字，邮箱需是规范Email邮箱，否则无法提交</h3>
+  </div>
+  <script>
+    // 表单验证模块
+    const FormValidator = {
+      rules: {
+        name: {
+          required: true,
+          minLength: 2,
+          pattern: /^[a-zA-Z\u4e00-\u9fa5\s]+$/
+        },
+        email: {
+          required: true,
+          pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        },
+        phone: {
+          required: true,
+          pattern: /^[\d\s\-\+\(\)]{10,}$/
+        }
+      },
+      
+      validateField(fieldName, value) {
+        const rule = this.rules[fieldName];
+        if (!rule) return { isValid: true, message: "" };
+        
+        // 检查必填项
+        if (rule.required && (!value || value.trim() === "")) {
+          return { isValid: false, message: "This field is required" };
+        }
+        
+        // 检查最小长度
+        if (rule.minLength && value && value.length < rule.minLength) {
+          return { isValid: false, message: `Minimum ${rule.minLength} characters required` };
+        }
+        
+        // 检查正则表达式
+        if (rule.pattern && value && !rule.pattern.test(value)) {
+          return { isValid: false, message: "Please enter a valid value" };
+        }
+        
+        return { isValid: true, message: "" };
+      },
+      
+      validateForm(formData) {
+        let isValid = true;
+        const errors = {};
+        
+        for (const field in this.rules) {
+          const value = formData[field] || "";
+          const result = this.validateField(field, value);
+          
+          if (!result.isValid) {
+            isValid = false;
+            errors[field] = result.message;
+          }
+        }
+        
+        return { isValid, errors };
+      },
+      
+      displayErrors(errors) {
+        // 清除所有错误状态
+        document.querySelectorAll('input').forEach(input => {
+          input.classList.remove('error');
+        });
+        document.querySelectorAll('.error-message').forEach(el => {
+          el.style.display = 'none';
+        });
+        
+        // 显示新的错误
+        for (const field in errors) {
+          const fieldElement = document.querySelector(`[name="${field}"]`);
+          const errorElement = document.getElementById(`${field}Error`);
+          
+          if (fieldElement && errorElement) {
+            fieldElement.classList.add('error');
+            errorElement.textContent = errors[field];
+            errorElement.style.display = 'block';
+          }
+        }
+      },
+      
+      init(formId) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+        
+        // 实时验证
+        form.querySelectorAll('input').forEach(field => {
+          field.addEventListener('blur', () => {
+            const result = this.validateField(field.name, field.value);
+            const errorElement = document.getElementById(`${field.name}Error`);
+            
+            if (!result.isValid) {
+              field.classList.add('error');
+              errorElement.textContent = result.message;
+              errorElement.style.display = 'block';
+            } else {
+              field.classList.remove('error');
+              errorElement.style.display = 'none';
+            }
+          });
+        });
+        
+        // 表单提交验证
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          
+          const formData = {};
+          new FormData(form).forEach((value, key) => {
+            formData[key] = value;
+          });
+          
+          const result = this.validateForm(formData);
+          
+          if (result.isValid) {
+            // 验证成功 - 显示成功消息并关闭模态框
+            alert("Form submitted successfully!\nName: " + formData.name + 
+                  "\nPhone: " + formData.phone + 
+                  "\nEmail: " + formData.email);
+            modal.style.display = "none";
+            form.reset();
+          } else {
+            // 显示错误
+            this.displayErrors(result.errors);
+          }
+        });
+      }
+    };
+
+    // 原有的模态框控制代码
+    const quoteBtn = document.getElementById("quoteBtn");
+    const startBtn = document.getElementById("startBtn");
+    const modal = document.getElementById("formModal");
+    const closeModal = document.getElementById("closeModal");
+
+    // 打开模态框
+    quoteBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+    });
+    
+    startBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+    });
+
+    // 关闭模态框
+    closeModal.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+
+    // 初始化表单验证
+    document.addEventListener('DOMContentLoaded', function() {
+      FormValidator.init('contactForm');
+    });
+  </script>
+</body>
+</html>
