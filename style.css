@@ -192,17 +192,114 @@
       cursor: pointer;
     }
 
-    /* 响应式布局 */
-    @media (max-width: 768px) {
-      .hero {
-        flex-direction: column;
-        text-align: center;
-      }
-      .btn-group {
-        justify-content: center;
-      }
-      .stats {
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-    }
+  /* 移动端响应式优化 - 尽量不影响PC端 */
+@media (max-width: 768px) {
+  .hero {
+    width: 95% !important; /* 移动端增加宽度 */
+    flex-direction: column;
+    text-align: center;
+    padding: 20px 15px !important;
+    gap: 30px !important;
+    margin-top: 30px !important;
+  }
+
+  .hero-text h1 {
+    font-size: 28px !important; /* 减小标题字体 */
+    margin-bottom: 20px !important;
+  }
+
+  .hero-text p {
+    font-size: 16px !important; /* 调整正文字体 */
+    margin-bottom: 30px !important;
+    line-height: 1.5;
+  }
+
+  .btn-group {
+    flex-direction: column; /* 按钮竖排 */
+    gap: 12px !important;
+    margin-bottom: 30px !important;
+  }
+
+  .btn {
+    padding: 12px 20px !important; /* 增大按钮尺寸 */
+    font-size: 16px !important;
+    justify-content: center; /* 文字居中 */
+  }
+
+  .stats {
+    gap: 30px !important; /* 减少间距 */
+    justify-content: space-around; /* 平均分布 */
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    font-size: 14px !important;
+    min-width: 80px; /* 保证每个统计项有最小宽度 */
+  }
+
+  .hero-image img {
+    width: 100% !important; /* 图片宽度自适应 */
+    height: auto !important; /* 高度自适应 */
+    max-width: 400px; /* 限制最大宽度 */
+  }
+
+  /* 模态框移动端优化 */
+  .modal-content {
+    width: 90% !important; /* 模态框宽度适应屏幕 */
+    min-height: 400px !important;
+    padding: 25px 20px !important;
+  }
+
+  .modal-content h2 {
+    font-size: 24px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .modal-content label {
+    font-size: 16px !important;
+  }
+
+  .modal-content input {
+    font-size: 16px !important;
+    height: 44px !important; /* 增大输入框高度便于触摸 */
+    margin-top: 8px !important;
+  }
+
+  .modal-content button {
+    font-size: 16px !important;
+    height: 48px !important; /* 增大按钮高度 */
+    margin-top: 25px !important;
+  }
+
+  .error-message {
+    font-size: 12px !important;
+  }
+}
+
+/* 小屏手机额外优化 */
+@media (max-width: 480px) {
+  .hero-text h1 {
+    font-size: 24px !important;
+  }
+
+  .hero-text p {
+    font-size: 14px !important;
+  }
+
+  .btn {
+    font-size: 14px !important;
+    padding: 10px 16px !important;
+  }
+
+  .stat {
+    font-size: 12px !important;
+  }
+
+  .stats {
+    gap: 20px !important;
+  }
+
+  .modal-content h2 {
+    font-size: 20px !important;
+  }
+}
